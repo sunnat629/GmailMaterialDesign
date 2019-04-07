@@ -46,4 +46,9 @@ object Calculate {
         }
         return returnColor
     }
+
+    fun getAlphabetChar(): String{
+    val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()
+            return alphabet[Random().nextInt(25)].toString()
+    }
 }

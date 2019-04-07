@@ -1,6 +1,7 @@
 package dos.sunnat629.com.gmailmaterialdesign.ui.adapters
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import dos.sunnat629.com.gmailmaterialdesign.R
 import dos.sunnat629.com.gmailmaterialdesign.model.entities.MailContent
 import dos.sunnat629.com.gmailmaterialdesign.utils.Calculate
 import kotlinx.android.synthetic.main.mail_list_item.view.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 
 class MailListAdapter() : RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
@@ -25,8 +27,6 @@ class MailListAdapter() : RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-
         return ViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.mail_list_item, parent, false))
     }
@@ -46,10 +46,12 @@ class MailListAdapter() : RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
     inner class ViewHolder(private val mView: View) : RecyclerView.ViewHolder(mView) {
         fun bind(position: Int) {
             val item = mMailContent[position]
-            mView.mailHolderText.text = item.receiver.subSequence(0, 1)
-            mView.mailHolderText.setBackgroundColor(Calculate.getRandomMaterialColor())
 
-            mView.sender.text = item.receiver
+            val demoChar = Calculate.getAlphabetChar()
+            mView.mailHolderText.text = demoChar
+            mView.mailHolderText.background.setColorFilter(Calculate.getRandomMaterialColor(), PorterDuff.Mode.SRC_ATOP)
+
+            mView.sender.text = mContext.resources.getString(R.string.senderName, demoChar, item.receiver)
             mView.sender.setTypeface(null, isRead(item.isRead))
 
             mView.sub.text = item.mailSubject
@@ -61,6 +63,25 @@ class MailListAdapter() : RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
 
             Glide.with(mContext).load(getImportantIcon(item.isImportant)).into(mView.important)
             Glide.with(mContext).load(getStarIcon(item.isStared)).into(mView.star)
+
+           demoToggle(mView, item)
+        }
+
+        private fun demoToggle(
+            mView: View,
+            item: MailContent
+        ) {
+            mView.important.onClick {
+                item.isImportant = !item.isImportant
+                val isToggle = item.isImportant
+                Glide.with(mContext).load(getImportantIcon(isToggle)).into(mView.important)
+            }
+
+            mView.star.onClick {
+                item.isStared = !item.isStared
+                val isToggle = item.isStared
+                Glide.with(mContext).load(getStarIcon(isToggle)).into(mView.star)
+            }
         }
 
     }
@@ -72,17 +93,17 @@ class MailListAdapter() : RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
 
     private fun getImportantIcon(isImportant: Boolean): Drawable? {
         return if (isImportant) {
-            mContext.resources.getDrawable(dos.sunnat629.com.gmailmaterialdesign.R.drawable.ic_label_important_24dp, null)
+            mContext.resources.getDrawable(R.drawable.ic_label_important_24dp, null)
         } else {
-            mContext.resources.getDrawable(dos.sunnat629.com.gmailmaterialdesign.R.drawable.ic_label_outline_important_24dp, null)
+            mContext.resources.getDrawable(R.drawable.ic_label_outline_important_24dp, null)
         }
     }
 
     private fun getStarIcon(isStar: Boolean): Drawable? {
         return if (isStar) {
-            mContext.resources.getDrawable(dos.sunnat629.com.gmailmaterialdesign.R.drawable.ic_star_full_24dp, null)
+            mContext.resources.getDrawable(R.drawable.ic_star_full_24dp, null)
         } else {
-            mContext.resources.getDrawable(dos.sunnat629.com.gmailmaterialdesign.R.drawable.ic_star_24dp, null)
+            mContext.resources.getDrawable(R.drawable.ic_star_24dp, null)
         }
     }
 }
